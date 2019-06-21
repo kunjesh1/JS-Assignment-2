@@ -55,8 +55,8 @@ function myFunction() {
 
                 var apiRequest2 = fetch(data.items[0].branches_url.split("{")[0]).then(res=>res.json()).then(function (d2
                 ) {
-                   console.log(d2);
-                   console.log("jfdkj");
+                   //console.log(d2);
+                   //console.log("jfdkj");
                
                     result.numberOfBranch=Object.values(d2).map(d2=>d2.name).length;
 
