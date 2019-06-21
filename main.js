@@ -12,7 +12,7 @@ var result =
     },
     "licenseName": "",
     "score": "",
-    "numberOfBranch": ""
+    "numberOfBranch":""
 }
 
 
@@ -41,7 +41,7 @@ function myFunction() {
                 result.licenseName = data.items[0].licenseName;
                 result.score = data.items[0].score;
 
-                //console.log(data.items[0].owner.url);
+                console.log(data.items[0].branches_url.split("{")[0]);
 
 
 
@@ -51,21 +51,28 @@ function myFunction() {
                     result.owner.name = d1.name;
                     result.owner.followersCount = d1.followers;
                     result.owner.followingCount = d1.following;
-                }).catch(err=>console.log(err));
+                })
 
 
 
 
-                var apiRequest2 = fetch(data.items[0].branches_url).then(function (response) { 
-                    return response.json();
-                }).catch(err=>console.log(err));
+                var apiRequest2 = fetch(data.items[0].branches_url.split("{")[0]).then(res=>res.json).then((d2
+                )=>{
+                 
+                    result.numberOfBranch=Object.values(d2).map(d2=>d2.name).length;
+
+
+
+
+                });
+                
 
                 var combinedData = { "apiRequest1": {}, "apiRequest2": {} };
                 Promise.all([apiRequest1, apiRequest2]).then(function (values) {
                     combinedData["apiRequest1"] = values[0];
                     combinedData["apiRequest2"] = values[1];
                     return combinedData;
-                });
+                }).catch(err=>console.log(err));
 
             }
 
