@@ -38,7 +38,7 @@ function myFunction() {
                 result.licenseName = data.items[0].licenseName;
                 result.score = data.items[0].score;
 
-                console.log(data.items[0].branches_url.split("{")[0]);
+                //console.log(data.items[0].branches_url.split("{")[0]);
 
 
 
@@ -48,7 +48,7 @@ function myFunction() {
                     result.owner.name = d1.name;
                     result.owner.followersCount = d1.followers;
                     result.owner.followingCount = d1.following;
-                })
+                });
 
 
 
@@ -66,18 +66,44 @@ function myFunction() {
                 });
                 
 
-               
-                Promise.all([apiRequest1, apiRequest2]).then(function () {
+              /* Using Promise All 
+              Promise.all([apiRequest1, apiRequest2]).then(function () {
                       document.getElementById("output").innerHTML=JSON.stringify(result,undefined,2);
                    
-                }).catch(err=>console.log(err));
+             }).catch(err=>console.log(err));
+               */
+
+            
+
+             async function fetchResult()
+             {
+                 try{
+                  const x=await apiRequest1;
+
+                 } catch(err){console.log(err);}
+
+                 try{
+                  const y=await apiRequest2;
+                 }
+                 catch(err) {console.log(err);}
+               
+
+             }
+
+             fetchResult().then(
+
+                function print(){
+                 document.getElementById("output").innerHTML=JSON.stringify(result,undefined,2);
+                 
 
             }
 
         );
 
     console.log(result);
+    //console.log(jfkdj);
+
+});
 
 }
-
 
