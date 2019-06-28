@@ -1,19 +1,7 @@
-var result =
+var result1= [];
 
-{
-    "name": "",
-    "full_name": "",
-    "private": "",
-    "owner": {
-        "login": "",
-        "name": "",
-        "followersCount": "",
-        "followingCount": ""
-    },
-    "licenseName": "",
-    "score": "",
-    "numberOfBranch":""
-}
+
+
 
 
 
@@ -23,87 +11,133 @@ function myFunction() {
 
 
 
+
+
     fetch('https://api.github.com/search/repositories?q={{' + search + '}}').then(
-        res => res.json()).then(
-
-
-            function (data) {
-               // console.log(data);
+        res => res.json()).then(d=>d["items"].filter((d,index)=>index<=2)).then(function (data) {
+                console.log(data);
 
 
 
-                result.name = data.items[0].name;
-                result.full_name = data.items[0].full_name;
-                result.private = data.items[0].private;
-                result.licenseName = data.items[0].licenseName;
-                result.score = data.items[0].score;
+             
+                data.forEach((d,i)=>{
+                  console.log(i);
 
-                //console.log(data.items[0].branches_url.split("{")[0]);
-
-
-
-                var apiRequest1 = fetch(data.items[0].owner.url).then(res => res.json()).then(d1 => {
-                    
-                    result.owner.login = d1.login;
-                    result.owner.name = d1.name;
-                    result.owner.followersCount = d1.followers;
-                    result.owner.followingCount = d1.following;
-                });
-
-
-
-
-                var apiRequest2 = fetch(data.items[0].branches_url.split("{")[0]).then(res=>res.json()).then(function (d2
-                ) {
-                   //console.log(d2);
-                   //console.log("jfdkj");
                
-                    result.numberOfBranch=Object.values(d2).map(d2=>d2.name).length;
+               
+                result1.push({ "name": data[i].name,
+                "full_name": data[i].full_name,
+                "private": data[i].private,
 
-
-
-
+                "licenseName":data[i].licenseName,
+                "score": data[i].score,
+                "owner":"",
+                "numberOfBranch":""
+            
+              });
+                 
                 });
+
+                console.log(result1);
+
+
+
+
+
+              
+
+
+                var apiRequest1 = Promise.all(
+                    data.map(d=>fetch(d.owner.url).then(res=>res.json())
+                
+                ));
+                
+               
+
+
+
+                var apiRequest2 = Promise.all(data.map(d=>fetch(d.branches_url.split("{")[0])
+                .then(res=>res.json())))
+                
+            
                 
 
-              /* Using Promise All 
-              Promise.all([apiRequest1, apiRequest2]).then(function () {
-                      document.getElementById("output").innerHTML=JSON.stringify(result,undefined,2);
-                   
-             }).catch(err=>console.log(err));
-               */
+              //Using Promise All 
+              return Promise.all([apiRequest1, apiRequest2])
+             
+               
 
             
 
-             async function fetchResult()
-             {
-                 try{
-                  const x=await apiRequest1;
+        //      async function fetchResult()
+        //      {
+        //          try{
+        //           const x=await apiRequest1;
 
-                 } catch(err){console.log(err);}
+        //          } catch(err){console.log(err);}
 
-                 try{
-                  const y=await apiRequest2;
-                 }
-                 catch(err) {console.log(err);}
+        //          try{
+        //           const y=await apiRequest2;
+        //          }
+        //          catch(err) {console.log(err);}
                
 
-             }
+        //      }
 
-             fetchResult().then(
+        //      fetchResult().then(
 
-                function print(){
-                 document.getElementById("output").innerHTML=JSON.stringify(result,undefined,2);
+        //         function print(){
+        //          document.getElementById("output").innerHTML=JSON.stringify(result,undefined,2);
                  
 
-            }
+        //     }
 
-        );
+        // );
 
-    console.log(result);
+    //console.log(result);
     //console.log(jfkdj);
 
-});
+}
+
+
+
+
+
+
+
+
+).then(function (data) {
+    console.log(data[0]);
+    
+
+    console.log(result1[1].owner);
+    data[0].forEach((d,i)=>{
+    result1[i].owner=
+     {
+        "login": d.login,
+        "name": d.name,
+        "followersCount": d.followers,
+        "followingCount": d.following
+    };
+    
+     });
+
+
+     data[1].forEach((d,i)=>{
+      result1[i].numberOfBranch=Object.values(d).map(d2=>d2.name).length;
+
+     
+
+
+     });
+
+
+
+
+
+    console.log(data[1]);
+    document.getElementById("output").innerHTML=JSON.stringify(result1,undefined,2);
+}).catch(err => (console.log(err)));
 
 }
 
